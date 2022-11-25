@@ -76,17 +76,26 @@ AddrSpace::AddrSpace(OpenFile *executable)
         return;
     }
 
+    printf("noffH.noffMagic == NOFFMAGIC\n");
+
 // how big is address space?
     size = noffH.code.size + noffH.initData.size + noffH.uninitData.size
 			+ UserStackSize;	// we need to increase the size
 						// to leave room for the stack
+    printf("size = %d\n", size);
     numPages = divRoundUp(size, PageSize);
+    printf("numPages = %d\n", numPages);
+    printf("PageSize = %d\n", PageSize);
     size = numPages * PageSize;
+    printf("size = numPages * PageSize = %d\n", size);
+
+    printf("mm->GetFreePageCount() = %d\n", mm->GetFreePageCount());
 
     if(numPages > mm->GetFreePageCount()) {
         valid = false;
         return;
     }
+    printf("numPages <= mm->GetFreePageCount()\n");
 
     // Allocate a new PCB for the address space
     pcb = pcbManager->AllocatePCB();
