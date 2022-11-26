@@ -1,0 +1,37 @@
+Group 6: David Acosta, Rohith Yamsani, 
+Sameer Hiyderali
+
+Work distribution:
+David: Join, Fork, Exec, Exit
+Rohith: Fork, Exec, Kill
+Sameera: Yield, Kill
+
+Yield is complete.
+
+Exit is complete.
+
+Join is complete.
+
+Fork is complete.
+
+Exec works. However we had to lower the 
+amount the loop goes in the exec test file 
+from 5 to 4. The program could not handle 
+so many concurrent processes.
+
+Kill is incomplete. Our original idea was to 
+return -1 if the pid cannot be indexed in the 
+pcbManagers pcbs or if the pcb was null. If 
+it returned -1, then we would print that the 
+kill had failed. However, if we had a valid kill, 
+we would get the pcb to delete exited children, 
+set the pcb’s parent as null, deallocate the 
+pcb, and then delete pcb->thread->space. 
+After which, we would remove pcb->thread 
+from the scheduler, pcb->thread->Finish() and 
+the kill would be successful.
+
+The way to run the program is to 
+cd code/userprog 
+and then 
+./nachos -x ../test/[NAME_OF_SYS_CALL]
