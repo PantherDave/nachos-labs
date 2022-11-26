@@ -49,5 +49,10 @@ void decspn(int arg) {
 
 
 void PCB::DeleteExitedChildrenSetParentNull() {
-    children->Mapcar(decspn);
+    if(!children->IsEmpty()){
+        children->Mapcar(decspn);
+    }
+    else{
+        parent = NULL;
+    }
 }

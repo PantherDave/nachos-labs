@@ -31,6 +31,7 @@ StartProcess(char *filename)
 	return;
     }
     space = new AddrSpace(executable);    
+    // printf("mm->GetFreePageCount() = %d\n", mm->GetFreePageCount());
     currentThread->space = space;
 
     delete executable;			// close file

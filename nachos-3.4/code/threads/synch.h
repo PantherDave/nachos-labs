@@ -78,7 +78,9 @@ class Lock {
 					// holds this lock.  Useful for
 					// checking in Release, and in
 					// Condition variable ops below.
-
+    
+    bool isFree();
+    
   private:
     const char* name;				// for debugging
     // plus some other stuff you'll need to define
