@@ -23,10 +23,10 @@ class PCB;
 
 class AddrSpace {
   public:
-    AddrSpace(OpenFile *executable);	// Create an address space,
+    AddrSpace(OpenFile *executable, PCB *temppcb=NULL);	// Create an address space,
 					// initializing it with the program
 					// stored in the file "executable"
-    AddrSpace(AddrSpace* space); // Create an address space,
+    AddrSpace(AddrSpace* space, PCB *temppcb=NULL); // Create an address space,
           // which is a copy of an existing one
     ~AddrSpace();			// De-allocate an address space
 

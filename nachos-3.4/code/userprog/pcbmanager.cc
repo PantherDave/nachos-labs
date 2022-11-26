@@ -40,7 +40,7 @@ PCB *PCBManager::AllocatePCB()
 
 int PCBManager::DeallocatePCB(PCB *pcb)
 {
-
+    // printf("held by current thread = %d", pcbManagerLock->isHeldByCurrentThread());
     // Check is pcb is valid -- check pcbs for pcb->pid
     if (pcb->pid >= 0 && pcb->pid < sizeof(pcbs) && pcbManagerLock->isHeldByCurrentThread())
     {
@@ -51,8 +51,6 @@ int PCBManager::DeallocatePCB(PCB *pcb)
 
         // Release pcbManagerLock
         pcbManagerLock->Release();
-
-        printf("[%d] ", pcb->pid);
 
         delete pcbs[pcb->pid];
 

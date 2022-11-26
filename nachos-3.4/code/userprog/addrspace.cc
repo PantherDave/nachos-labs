@@ -60,7 +60,7 @@ SwapHeader (NoffHeader *noffH)
 //	"executable" is the file containing the object code to load into memory
 //----------------------------------------------------------------------
 
-AddrSpace::AddrSpace(OpenFile *executable)
+AddrSpace::AddrSpace(OpenFile *executable, PCB *temppcb)
 {
     NoffHeader noffH;
     unsigned int i, size;
@@ -76,30 +76,37 @@ AddrSpace::AddrSpace(OpenFile *executable)
         return;
     }
 
-    printf("noffH.noffMagic == NOFFMAGIC\n");
+    printf("Loaded Program: [%d] code | [%d] data | [%d] bss\n",noffH.code.size, noffH.initData.size, noffH.uninitData.size);
+    
+    // printf("noffH.noffMagic == NOFFMAGIC\n");
 
 // how big is address space?
     size = noffH.code.size + noffH.initData.size + noffH.uninitData.size
 			+ UserStackSize;	// we need to increase the size
 						// to leave room for the stack
-    printf("size = %d\n", size);
+    // printf("size = %d\n", size);
     numPages = divRoundUp(size, PageSize);
-    printf("numPages = %d\n", numPages);
-    printf("PageSize = %d\n", PageSize);
+    // printf("numPages = %d\n", numPages);
+    // printf("PageSize = %d\n", PageSize);
     size = numPages * PageSize;
-    printf("size = numPages * PageSize = %d\n", size);
+    // printf("size = numPages * PageSize = %d\n", size);
 
-    printf("mm->GetFreePageCount() = %d\n", mm->GetFreePageCount());
+    // printf("mm->GetFreePageCount() = %d\n", mm->GetFreePageCount());
 
     if(numPages > mm->GetFreePageCount()) {
         valid = false;
         return;
     }
-    printf("numPages <= mm->GetFreePageCount()\n");
+    // printf("numPages <= mm->GetFreePageCount()\n");
 
     // Allocate a new PCB for the address space
-    pcb = pcbManager->AllocatePCB();
-    pcb->thread = currentThread;
+    if(!temppcb){
+        pcb = pcbManager->AllocatePCB();
+        pcb->thread = currentThread;
+    }
+    else{
+        pcb = temppcb;
+    }
 
     DEBUG('a', "Initializing address space, num pages %d, size %d\n",
 					numPages, size);
@@ -165,7 +172,7 @@ unsigned int AddrSpace::GetNumPages() {
 // 	Create an address space as a copy of an existing one
 //----------------------------------------------------------------------
 
-AddrSpace::AddrSpace(AddrSpace* space) {
+AddrSpace::AddrSpace(AddrSpace* space, PCB *temppcb) {
 
     valid = true;
 

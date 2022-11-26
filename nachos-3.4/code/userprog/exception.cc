@@ -66,11 +66,13 @@ void doExit(int status) {
     pcb->DeleteExitedChildrenSetParentNull();
 
     // Manage PCB memory As a child process
-    if(pcb->parent == NULL) pcbManager->DeallocatePCB(pcb);
+    if(pcb->parent == NULL) {
+        pcbManager->DeallocatePCB(pcb);
+    }
 
     // Delete address space only after use is completed
     delete currentThread->space;
-    printf("mm->GetFreePageCount() = %d\n", mm->GetFreePageCount());
+    // printf("mm->GetFreePageCount() = %d\n", mm->GetFreePageCount());
 
     // Finish current thread only after all the cleanup is done
     // because currentThread marks itself to be destroyed (by a different thread)
@@ -130,7 +132,7 @@ int doFork(int functionAddr) {
     // Parent: currentThread->space
     // childAddrSpace: new AddrSpace(currentThread->space)
     AddrSpace* childAddrSpace = new AddrSpace(currentThread->space);
-    printf("mm->GetFreePageCount() = %d\n", mm->GetFreePageCount());
+    // printf("mm->GetFreePageCount() = %d\n", mm->GetFreePageCount());
 
     // 4. Create a new thread for the child and set its addrSpace
     // childThread = new Thread("childThread")
@@ -180,6 +182,7 @@ int doExec(char* filename) {
     // Use progtest.cc:StartProcess() as a guide
     int pid = currentThread->space->pcb->pid;
     printf("System Call: [%d] invoked [Exec]\n", pid);
+    printf("Exec Program: [%d] loading [%s]\n",pid,filename);
 
     // 1. Open the file and check validity
     OpenFile *executable = fileSystem->Open(filename);
@@ -190,12 +193,14 @@ int doExec(char* filename) {
         return -1;
     }
 
+    PCB *temp_pcb = currentThread->space->pcb;
+    temp_pcb->thread = currentThread;
 
      // 6. Delete current address space
     delete currentThread->space;
 
     // 2. Create new address space
-    space = new AddrSpace(executable);
+    space = new AddrSpace(executable, temp_pcb);
     
 
     // 3. Check if Addrspace creation was successful
@@ -206,15 +211,16 @@ int doExec(char* filename) {
 
     // Steps 4 and 5 may not be necessary!!
 
-    // // 4. Create a new PCB for the new addrspace
-    // // ?. Can you reuse existing pcb?
+    // 4. Create a new PCB for the new addrspace
+    // ?. Can you reuse existing pcb?
     // PCB* pcb = pcbManager->AllocatePCB();
-    // // Initialize parent
-    // pcb->parent = currentThread->space->pcb->parent;
-    // // space->pcb = currentThread->space->pcb;
+    space->pcb = temp_pcb;
+    // Initialize parent
+    // pcb->parent = temp_pcb->parent;
+    // space->pcb = currentThread->space->pcb;
 
-    // // // 5. Set the thread for the new pcb
-    // // pcb->thread = currentThread;
+    // // 5. Set the thread for the new pcb
+    // pcb->thread = currentThread;
 
     // // 6. Delete current address space
     // delete currentThread->space;
@@ -226,10 +232,10 @@ int doExec(char* filename) {
     delete executable;
 
     // 9. Initialize registers for new addrspace
-     space->InitRegisters();		// set the initial register values
+    currentThread->space->InitRegisters();		// set the initial register values
 
     // 10. Initialize the page table
-    space->RestoreState();		// load page table register
+    currentThread->space->RestoreState();		// load page table register
 
     // 11. Run the machine now that all is set up
     machine->Run();			// jump to the user progam

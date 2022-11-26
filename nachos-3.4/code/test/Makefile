@@ -35,7 +35,7 @@ CPP = gcc -E
 INCDIR =-I../userprog -I../threads
 CFLAGS = -G 0 -c $(INCDIR)
 
-all: halt shell matmult sort fork join kill exec memory
+all: halt shell matmult sort fork join kill exec exit memory
 
 start.o: start.s ../userprog/syscall.h
 	$(CPP) $(CPPFLAGS) start.c > strt.s
@@ -59,6 +59,12 @@ kill.o: kill.c
 kill:   kill.o start.o
 	$(LD) $(LDFLAGS) start.o kill.o -o kill.coff
 	../bin/coff2noff kill.coff kill 
+
+exit.o: exit.c
+	$(CC) $(CFLAGS) exit.c
+exit: exit.o start.o
+	$(LD) $(LDFLAGS) start.o exit.o -o exit.coff
+	../bin/coff2noff exit.coff exit
 
 exec.o: exec.c
 	$(CC) $(CFLAGS) exec.c

@@ -109,6 +109,11 @@ Lock::~Lock() {
     delete queue;
 }
 
+bool Lock::isFree(){
+    return free;
+}
+
+
 void Lock::Acquire() {
 
     IntStatus oldLevel = interrupt->SetLevel(IntOff);
