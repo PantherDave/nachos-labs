@@ -1,0 +1,28 @@
+Group 6: David Acosta, Rohith Yamsani, 
+Sameer Hiyderali
+
+Work distribution:
+David: Join, Fork, Exec, Exit
+Rohith: Fork, Exec, Kill
+Sameera: Yield, Kill
+
+Yield is complete.
+
+Exit is complete.
+
+Join is complete.
+
+Fork is complete.
+
+Exec works. However we had to lower the 
+amount the loop goes in the exec test file 
+from 5 to 4. The program could not handle 
+so many concurrent processes.
+
+Kill is complete
+
+The way to run the program is to 
+cd code/userprog 
+and then 
+./nachos -x ../test/[NAME_OF_SYS_CALL]
+
